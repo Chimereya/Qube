@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<main class="max-w-2xl m-auto mt-10 px-3 py-3 bg-white">
+
+<img id="image" src="{{ user.profile.profile_pic.url }}" class="h-40 w-40 shadow-md rounded-full object-cover align-middle">
+<br>
+
+<section style="margin-top: 10px;">
+    <strong>{{user.username}}</strong>
+    <br>
+    <p>{{ user.email }}</p>
+
+    {% if user.profile.bio %}
+    <p>{{ user.profile.bio }}.</p>
+   {% endif %}
+
+   <br>
+
+   {% if request.user == user %}
+                    <a href="{% url 'user:update_profile' user.profile.pk %}" class="rounded-md bg-indigo-500 text-white px-3 py-2">Edit profile</a>
+                    {% endif %}
+</section>
+
+</main>
+{% endblock %}

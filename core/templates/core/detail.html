@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+ {%load crispy_forms_tags %}
+  {% block content %}
+<main class="max-w-2xl m-auto mt-10 px-3 py-3 bg-white">
+  <div class="user">
+    <a
+      href="{% url 'user:profile' post.author.profile.pk %}"
+      class="flex items-center gap-2 mb-3"
+    >
+      <img
+        src="{{post.author.profile.profile_pic.url}}"
+        class="shadow-sm rounded-full h-9 w-9"
+      />
+      <h4 class="font-semibold hover:text-indigo-500 hover:underline">
+        {{post.author}}
+      </h4>
+      <small>{{post.date_added}}</small></a
+    >
+  </div>
+  <h2 class="font-semibold text-3xl mb-4">{{post.question}}</h2>
+
+  {% if user.is_authenticated %} {% if request.user in post.likes.all %}
+  <form method="post" action="{% url 'core:like_post' post.pk %}" class="mb-4">
+    {% csrf_token %}
+    <button type="submit" class="bg-red-500 py-1 px-3 text-white rounded-lg">
+      downvote
+    </button>
+  </form>
+
+  {% else %}
+  <form method="post" action="{% url 'core:like_post' post.pk %}" class="mb-4">
+    {% csrf_token %}
+    <button type="submit" class="bg-indigo-500 py-1 px-3 text-white rounded-lg">
+      upvote
+    </button>
+  </form>
+  {% endif %} {% endif %}
+  <p>{{ post.num_of_likes }} upvotes</p>
+
+  {% if user.is_authenticated %} {% if request.user == post.author %}
+  <a
+    href="{% url 'core:update' post.pk %}"
+    class="py-2 px-4 rounded-md bg-indigo-500 text-white text-sm"
+    >Update</a
+  >
+  <a
+    href="{% url 'core:delete' post.pk %}"
+    class="py-2 px-4 rounded-md bg-red-500 text-white text-sm"
+    >Delete</a
+  >
+  {% endif %} {% endif %}
+</main>
+
+{% endblock %}

@@ -1,0 +1,30 @@
+{% extends 'base.html' %} {% block content %}
+
+<main class="max-w-2xl m-auto mt-10 px-3 py-3">
+  {% for post in posts %}
+  <div class="mb-5 shadow-md hover:shadow-lg bg-white p-4">
+    <div class="user">
+      <a
+        href="{% url 'user:profile' post.author.pk %}"
+        class="flex items-center gap-2 mb-3"
+      >
+        <img
+          src="{{post.author.profile.profile_pic.url}}"
+          class="shadow-sm rounded-full h-9 w-9"
+        />
+        <h4 class="font-semibold hover:text-indigo-500 hover:underline">
+          {{post.author}}
+        </h4>
+        <small>{{post.date_added}}</small></a
+      >
+    </div>
+    <a
+      href="{% url 'core:detail' post.pk %}"
+      class="font-semibold text-lg hover:text-indigo-500 hover:underline"
+      >{{post.question}}</a
+    >
+  </div>
+
+  {% endfor %}
+</main>
+{% endblock %}
