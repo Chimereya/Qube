@@ -1,6 +1,11 @@
 {% extends 'base.html' %}
  {%load crispy_forms_tags %}
   {% block content %}
+<style>
+    textarea{
+     height:60px;
+    }
+</style>
 <main class="max-w-2xl m-auto mt-10 px-3 py-3 bg-white">
   <div class="user">
     <a
@@ -49,6 +54,52 @@
     >Delete</a
   >
   {% endif %} {% endif %}
+
+  <br>
+
+  <div class="comment-wrapper">
+
+            <h2 class="font-semibold text-3xl mt-5 mb-3">Add Response</h2>
+                 {% with comments.count as total_comments %}
+            <h4>
+                {{ total_comments }} response{{ total_comments|pluralize }}
+            </h4>
+        {% endwith %}
+         {% if user.is_authenticated %}
+        <form method="post" action=".">
+            {% csrf_token %}
+            {{ comment_form|crispy }}
+            <button type="submit" class="px-4 py-2 bg-indigo-500 text-white text-sm rounded-md">Submit Response</button>
+        </form>
+         {% else %}
+         <p>Please <a href="{% url 'user:login' %}">login </a>to comment</p>
+          {% endif %}
+        {% if not post.comments.all %}
+            No comments yet
+
+        {% else %}
+            {% for comment in post.get_comments %}
+                {% include 'core/response.html' with comment=comment %}
+            {% endfor %}
+        {% endif %}
+
+          </div>
+
+  <script>
+  function openReply(response_id) {
+    const reply_form_box = document.querySelector(`#reply-form-box-${response_id}`)
+    if (reply_form_box) {
+        reply_form_box.style.display = 'block';
+    }
+
+}
+function cancelReply(response_id) {
+    const reply_form_box = document.querySelector(`#reply-form-box-${response_id}`)
+    if (reply_form_box) {
+        reply_form_box.style.display = 'none';
+    }
+}
+</script>
 </main>
 
 {% endblock %}

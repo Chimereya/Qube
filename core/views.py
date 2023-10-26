@@ -3,8 +3,8 @@ from . import views
 from django.contrib.auth.models import User, auth
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from .models import Post
-from .forms import PostForm
+from .models import Post, Comment
+from .forms import PostForm, CommentForm
 from django.http import JsonResponse
 from django.urls import reverse
 
@@ -18,9 +18,29 @@ def homepage(request):
 
 
 # detail
-def detail(request, pk):
+
+def detail_view(request, pk):
     post = get_object_or_404(Post, id=pk)
-    return render(request, 'core/detail.html', {'post': post})
+    comments = post.comments.filter(active=True)
+    new_comment = None
+    comment_count = post.comments.count()
+    if request.method == 'POST':
+        comment_form = CommentForm(data=request.POST)
+        if comment_form.is_valid():
+            new_comment = comment_form.save(commit=False)
+            new_comment.name = request.user
+            new_comment.post = post
+            new_comment.save()
+            return redirect('core:detail', pk)
+    else:
+        comment_form = CommentForm()
+
+    return render(request, 'core/detail.html', {'post': post,
+                                                   'comments': comments,
+                                                   'new_comment':new_comment,
+                                                   'comment_form': comment_form,
+                                                   'comment_count': comment_count,
+                                                   })
 
 
 def reply_post(request):
@@ -32,6 +52,7 @@ def reply_post(request):
             post_url = request.POST.get('post_url')
             reply = form.save(commit=False)
             reply.post = Post(id=post_id)
+            reply.name = request.user
             reply.parent = Comment(id=parent_id)
             reply.save()
             return redirect(post_url,  reply.id)
